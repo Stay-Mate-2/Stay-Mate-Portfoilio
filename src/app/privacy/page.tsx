@@ -5,72 +5,106 @@ import { contactEmail, siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "How the StayMate early-access website collects, uses and protects your information.",
+  description: "How the StayMate early-access website collects, processes, stores, and protects your registration information.",
   ...(siteUrl ? { alternates: { canonical: "/privacy" } } : {}),
 };
 
 export default function PrivacyPage() {
   return (
-    <LegalLayout title="Privacy Policy" updated="November 2026 (draft)">
+    <LegalLayout title="Privacy Policy" updated="November 2026">
       <section>
         <h2>1. What this covers</h2>
         <p>
-          This policy explains what happens to your information when you use the StayMate pre-launch website and join the early-access list. It does not yet cover the StayMate
-          mobile app, which will have its own policy before launch.
+          This policy explains how StayMate collects, processes, stores, and protects information submitted on our pre-launch website and early-access registration forms. The future
+          StayMate mobile application will publish its own dedicated privacy notice before launch.
         </p>
       </section>
+
       <section>
-        <h2>2. What we collect</h2>
-        <p>If you join the early-access list we collect only:</p>
+        <h2>2. Information we collect</h2>
+        <p>When early-access registration is enabled and you register, we collect only:</p>
         <ul>
-          <li>Your name and email address.</li>
-          <li>Whether you are a student, working professional or property owner.</li>
-          <li>Your preferred city, if you choose to provide it.</li>
-          <li>A record of your consent: when you gave it and which version of the consent wording you agreed to.</li>
-          <li>A one-way hashed form of your IP address, used only to detect spam and abuse. Your raw IP address is not stored with your registration.</li>
+          <li>Your full name and normalized email address.</li>
+          <li>Your selected category (Student, Working Professional, or Property Owner).</li>
+          <li>Your preferred city, only if you choose to enter one.</li>
+          <li>
+            Consent &amp; record metadata: whether you opted in to optional marketing emails, marketing consent timestamp (when opted in), generated Registration ID, submission
+            timestamp, and registration status.
+          </li>
         </ul>
         <p className="mt-3">
-          The interactive demos on this site (compatibility, cost calculator, listings filter, shared-living tools) run entirely in your browser. What you type into them is not sent to
-          us or stored.
+          We do not collect passwords, Aadhaar/government identity documents, payment details, or unnecessary personal fields on this website. Interactive tools on the landing page
+          (compatibility demo, monthly cost calculator, listing filters, and planned shared-living previews) run locally in your browser without transmitting entries.
         </p>
       </section>
+
       <section>
-        <h2>3. Cookies and analytics</h2>
-        <p>This website does not set advertising or analytics cookies and does not load third-party trackers.</p>
+        <h2>3. Purpose &amp; separation of transactional vs. marketing emails</h2>
+        <ul>
+          <li>
+            <strong>Transactional registration emails:</strong> Used strictly to send your registration confirmation (with your reference ID) and to manage your early-access entry.
+          </li>
+          <li>
+            <strong>Optional marketing &amp; product updates:</strong> Sent only if you explicitly tick the separate optional marketing consent checkbox. Your registration confirmation does
+            not count as marketing consent.
+          </li>
+          <li>
+            <strong>Abuse &amp; spam prevention:</strong> Our Vercel server computes a keyed one-way HMAC hash of your connection IP and normalized email address for short-lived rate
+            limiting in Upstash Redis. Plaintext IP addresses are never written into the registration spreadsheet.
+          </li>
+        </ul>
       </section>
+
       <section>
-        <h2>4. Why we use it</h2>
+        <h2>4. Infrastructure, storage &amp; third-party processors</h2>
+        <p>StayMate uses the following infrastructure solely to operate registration, abuse prevention, storage, and email delivery—we never sell your data or share it for advertising:</p>
+        <ul>
+          <li><strong>Vercel:</strong> Hosts the website and executes server-side input validation, Origin checks, and HMAC-SHA256 signing before forwarding data.</li>
+          <li><strong>Upstash Redis:</strong> Stores short-lived, HMAC-hashed rate-limit counters to protect against automated spam and brute force.</li>
+          <li>
+            <strong>Google Apps Script &amp; Google Sheets (`StayMate_Early_Access_Database`):</strong> Processes signed requests and stores registration records in a private, restricted
+            spreadsheet accessible only to authorized StayMate administrators.
+          </li>
+          <li><strong>Google MailApp:</strong> Sends registration confirmation emails and internal administrator notifications.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>5. Withdrawing marketing consent</h2>
         <p>
-          We use your details to send product updates and early-access news about StayMate, and only if you ticked the consent box. We do not sell your information and we do not share it
-          for advertising.
+          You can withdraw your consent to optional marketing updates at any time using the{" "}
+          <Link href="/unsubscribe">unsubscribe page</Link>. Submitting your email there sends an authenticated withdrawal request directly to the registration database and sets your
+          marketing consent flag to false.
         </p>
       </section>
+
       <section>
-        <h2>5. Withdrawing consent</h2>
+        <h2>6. Data retention &amp; deletion procedure</h2>
         <p>
-          You can withdraw your consent at any time on the <Link href="/unsubscribe">unsubscribe page</Link>. After you withdraw, we will not send you further product updates.
+          Early-access records are retained only during the pre-launch period (and up to 12 months after initial cohort rollout unless withdrawn earlier or converted into an active user
+          account with separate in-app consent). Inactive or withdrawn records are purged during periodic database reviews.
         </p>
-      </section>
-      <section>
-        <h2>6. Storage and security</h2>
-        <p>
-          Registrations are sent over an encrypted connection to the StayMate server and stored in a database that is not publicly accessible. Access is limited to authorised StayMate
-          administrators. No system is perfectly secure, but we limit what we collect so there is less to protect.
-        </p>
-      </section>
-      <section>
-        <h2>7. How long we keep it</h2>
-        <p>The retention period will be confirmed before public launch. Until then, details are kept only for the purpose of early-access communication.</p>
-      </section>
-      <section>
-        <h2>8. Your rights and contact</h2>
-        <p>
-          You may ask to access, correct or erase your information.{" "}
+        <p className="mt-3">
+          <strong>How to request access, correction, or complete deletion:</strong>{" "}
           {contactEmail ? (
-            <>Contact us at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</>
+            <>
+              Email us at <a href={`mailto:${contactEmail}`}>{contactEmail}</a> from your registered email address with &ldquo;Early Access Data Deletion&rdquo; in the subject line. An
+              authorized StayMate administrator will verify ownership and permanently remove your row from the private registration spreadsheet within 15 days.
+            </>
           ) : (
-            <>A contact and grievance address will be published here before launch.</>
+            <>
+              You can immediately withdraw marketing updates via the <Link href="/unsubscribe">unsubscribe page</Link>. Once StayMate publishes its support/grievance email before
+              public cohort launch, you will also be able to request complete row erasure directly via that address.
+            </>
           )}
+        </p>
+      </section>
+
+      <section>
+        <h2>7. Security &amp; cookies</h2>
+        <p>
+          All traffic uses HTTPS, server secrets remain strictly isolated from browser JavaScript, and server-to-Apps-Script payloads are signed with HMAC-SHA256. No system can
+          guarantee absolute security, so we minimize the personal data we request. This site sets no advertising or analytics cookies.
         </p>
       </section>
     </LegalLayout>

@@ -28,9 +28,6 @@ export const siteUrl: string | undefined =
     ? cleanUrl(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`)
     : undefined);
 
-/** Early-access form is only submittable when explicitly enabled at build time. */
-export const waitlistEnabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED === "true";
-
 export const contactEmail = clean(process.env.NEXT_PUBLIC_CONTACT_EMAIL);
 
 export const socialLinks = [

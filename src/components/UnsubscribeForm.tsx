@@ -3,7 +3,7 @@
 import { useId, useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { unsubscribeRequestSchema } from "@/lib/waitlist-schema";
+import { consentWithdrawSchema } from "@/lib/early-access/schema";
 
 type State = { kind: "idle" } | { kind: "busy" } | { kind: "done" } | { kind: "error"; message: string };
 
@@ -16,7 +16,7 @@ export function UnsubscribeForm() {
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const parsed = unsubscribeRequestSchema.safeParse({ email: String(fd.get("email") ?? "") });
+    const parsed = consentWithdrawSchema.safeParse({ email: String(fd.get("email") ?? "") });
     if (!parsed.success) {
       setFieldError(parsed.error.issues[0]?.message ?? "Please enter a valid email address.");
       return;
@@ -24,10 +24,10 @@ export function UnsubscribeForm() {
     setFieldError(undefined);
     setState({ kind: "busy" });
     try {
-      const res = await fetch("/api/waitlist/unsubscribe", {
+      const res = await fetch("/api/early-access/unsubscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: parsed.data.email, company: String(fd.get("company") ?? "") }),
+        body: JSON.stringify({ email: parsed.data.email, honeypot: String(fd.get("honeypot") ?? "") }),
       });
       const data = (await res.json().catch(() => null)) as { ok?: boolean; message?: string } | null;
       if (res.ok && data?.ok) setState({ kind: "done" });
@@ -42,7 +42,7 @@ export function UnsubscribeForm() {
       <div role="status" className="py-6 text-center">
         <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-mint text-emerald-ink"><CheckCircle2 size={30} aria-hidden="true" /></span>
         <p className="mt-4 font-display text-xl font-extrabold">Request received</p>
-        <p className="mt-2 text-muted">If that email was on the early-access list, it has been removed from future communication.</p>
+        <p className="mt-2 text-muted">If that email was subscribed for optional product updates, marketing consent has been withdrawn.</p>
       </div>
     );
   }
@@ -50,8 +50,8 @@ export function UnsubscribeForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-4">
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-        <label htmlFor={`${id}-co`}>Company</label>
-        <input id={`${id}-co`} name="company" tabIndex={-1} autoComplete="off" />
+        <label htmlFor={`${id}-hp`}>Leave empty</label>
+        <input id={`${id}-hp`} name="honeypot" tabIndex={-1} autoComplete="off" />
       </div>
       <div>
         <label htmlFor={`${id}-email`} className="text-sm font-bold">Email address</label>
@@ -71,7 +71,7 @@ export function UnsubscribeForm() {
       </div>
       {state.kind === "error" ? <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm font-medium text-red-900">{state.message}</p> : null}
       <Button type="submit" size="lg" disabled={state.kind === "busy"}>
-        {state.kind === "busy" ? (<><Loader2 size={18} className="animate-spin" aria-hidden="true" /> Working…</>) : "Withdraw my consent"}
+        {state.kind === "busy" ? (<><Loader2 size={18} className="animate-spin" aria-hidden="true" /> Working…</>) : "Withdraw marketing consent"}
       </Button>
     </form>
   );

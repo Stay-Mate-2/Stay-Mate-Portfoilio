@@ -15,9 +15,13 @@ import { Safety } from "@/components/sections/Safety";
 import { SharedLiving } from "@/components/sections/SharedLiving";
 import { Solution } from "@/components/sections/Solution";
 import { JsonLd } from "@/components/JsonLd";
-import { waitlistEnabled } from "@/lib/site";
+import { isEarlyAccessEnabled } from "@/lib/early-access/config";
+
+export const dynamic = "force-dynamic";
 
 export default function HomePage() {
+  const earlyAccessEnabled = isEarlyAccessEnabled();
+
   return (
     <>
       <JsonLd />
@@ -35,7 +39,7 @@ export default function HomePage() {
         <ProductPreview />
         <Audience />
         <About />
-        <EarlyAccess enabled={waitlistEnabled} />
+        <EarlyAccess enabled={earlyAccessEnabled} />
         <FAQ />
         <FinalCTA />
       </main>
