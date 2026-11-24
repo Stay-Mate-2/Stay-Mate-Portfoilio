@@ -1,6 +1,30 @@
-import { ArrowRight, Compass } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Building2, Compass, GraduationCap, ShieldCheck, Sparkles, Wallet } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
 import { SpatialHeroStage } from "@/components/sections/SpatialHeroStage";
+
+const PERSONAS = [
+  { href: "#students", icon: GraduationCap, label: "Students" },
+  { href: "#professionals", icon: BriefcaseBusiness, label: "Working Professionals" },
+  { href: "#owners", icon: Building2, label: "PG & Property Owners" },
+] as const;
+
+const HIGHLIGHTS = [
+  {
+    icon: Sparkles,
+    title: "8-Factor Match",
+    detail: "Explainable lifestyle & deal-breaker fit",
+  },
+  {
+    icon: Wallet,
+    title: "True Monthly Cost",
+    detail: "Rent, deposit & utility share upfront",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Private by Default",
+    detail: "Hidden phone number & gated addresses",
+  },
+] as const;
 
 export function Hero() {
   return (
@@ -18,38 +42,68 @@ export function Hero() {
         />
       </div>
 
-      <div className="wrap grid items-center gap-12 pb-20 lg:grid-cols-[1.02fr_1.05fr] lg:gap-8 lg:pb-28">
+      <div className="wrap grid items-center gap-12 pb-20 lg:grid-cols-[1.06fr_1fr] lg:gap-10 lg:pb-28">
         <div className="max-w-2xl">
-          <p className="inline-flex items-center gap-2.5 rounded-full border border-emerald/35 bg-mint px-4 py-2 text-sm font-semibold text-emerald-ink shadow-sm">
+          <p className="inline-flex flex-wrap items-center gap-2.5 rounded-full border border-emerald/35 bg-mint px-4 py-2 text-xs font-bold text-emerald-ink shadow-sm sm:text-sm">
             <span aria-hidden="true" className="h-2.5 w-2.5 animate-pulse-dot rounded-full bg-emerald" />
-            Building a better way to live together.
+            India-first Shared-Living Android App · Early Access Open
           </p>
 
-          <h1 id="hero-title" className="mt-7 font-display text-[clamp(2.6rem,7vw,4.9rem)] font-extrabold leading-[1.02] text-navy">
+          <h1 id="hero-title" className="mt-6 font-display text-[clamp(2.45rem,6.4vw,4.55rem)] font-extrabold leading-[1.03] text-navy">
             Your next home starts with the <span className="text-gradient">right people.</span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-            Find compatible roommates, discover affordable places and make shared living easier. One smarter way to find where you belong.
+          <p className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-muted sm:text-lg">
+            Stop gambling on random WhatsApp flatmate groups and surprise broker fees. <strong className="font-semibold text-navy">StayMate</strong> helps you match with compatible roommates, browse moderated PGs, rooms &amp; flats with clear upfront pricing, and chat safely without exposing your phone number.
           </p>
 
-          <div className="mt-9 flex flex-col gap-3.5 sm:flex-row">
+          <div className="mt-8 flex flex-col gap-3.5 sm:flex-row">
             <ButtonLink href="#early-access" size="lg" className="slab-3d-royal">
-              Get Early Access <ArrowRight size={18} aria-hidden="true" />
+              Join Free Early Access <ArrowRight size={18} aria-hidden="true" />
             </ButtonLink>
-            <ButtonLink href="#features" variant="secondary" size="lg" className="slab-3d">
-              <Compass size={18} aria-hidden="true" /> Explore StayMate
+            <ButtonLink href="#why-staymate" variant="secondary" size="lg" className="slab-3d">
+              <Compass size={18} aria-hidden="true" /> See What We&apos;re Building
             </ButtonLink>
           </div>
 
-          <ul className="mt-9 flex flex-wrap gap-2.5 text-sm font-semibold text-navy/85">
-            {["Roommates", "PGs, rooms & flats", "Real monthly cost", "Android first"].map((t) => (
-              <li key={t} className="inline-flex items-center gap-2 rounded-full border border-line bg-white/85 px-3.5 py-1.5 shadow-sm">
-                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-emerald" />
-                {t}
-              </li>
-            ))}
-          </ul>
+          {/* Direct role jump chips */}
+          <div className="mt-7 flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted">Built for:</span>
+            {PERSONAS.map((p) => {
+              const Icon = p.icon;
+              return (
+                <a
+                  key={p.label}
+                  href={p.href}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white/90 px-3.5 py-1.5 text-xs font-bold text-navy shadow-sm transition-all hover:border-royal/40 hover:bg-sky hover:text-royal"
+                >
+                  <Icon size={14} className="text-royal" aria-hidden="true" />
+                  {p.label}
+                </a>
+              );
+            })}
+          </div>
+
+          {/* 3-Pillar Clarity Strip */}
+          <dl className="mt-8 grid gap-3 sm:grid-cols-3">
+            {HIGHLIGHTS.map((h) => {
+              const Icon = h.icon;
+              return (
+                <div
+                  key={h.title}
+                  className="rounded-2xl border border-line/90 bg-white/90 p-3.5 shadow-sm backdrop-blur-sm"
+                >
+                  <dt className="flex items-center gap-2 font-display text-sm font-extrabold text-navy">
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-sky text-royal">
+                      <Icon size={15} aria-hidden="true" />
+                    </span>
+                    {h.title}
+                  </dt>
+                  <dd className="mt-1.5 text-xs leading-snug text-muted">{h.detail}</dd>
+                </div>
+              );
+            })}
+          </dl>
         </div>
 
         <SpatialHeroStage />

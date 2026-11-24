@@ -14,6 +14,7 @@ import { ProductPreview } from "@/components/sections/ProductPreview";
 import { Safety } from "@/components/sections/Safety";
 import { SharedLiving } from "@/components/sections/SharedLiving";
 import { Solution } from "@/components/sections/Solution";
+import { WhyStayMate } from "@/components/sections/WhyStayMate";
 import { JsonLd } from "@/components/JsonLd";
 import { googleFormEmbedUrl } from "@/lib/site";
 
@@ -25,6 +26,7 @@ export default function HomePage() {
       <main id="main">
         <Hero />
         <Problem />
+        <WhyStayMate />
         <Solution />
         <Compatibility />
         <Affordability />

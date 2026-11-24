@@ -54,20 +54,20 @@ export function Navbar({ home = true }: { home?: boolean }) {
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
       <nav
         aria-label="Primary"
-        className={`mx-auto flex h-16 max-w-6xl items-center justify-between rounded-full border bg-white/85 pl-4 pr-2.5 backdrop-blur-md transition-all duration-300 sm:pl-6 ${
-          scrolled ? "border-line shadow-card" : "border-transparent"
+        className={`mx-auto flex h-16 max-w-7xl items-center justify-between rounded-full border bg-white/90 pl-4 pr-2.5 backdrop-blur-md transition-all duration-300 sm:pl-6 ${
+          scrolled ? "border-line shadow-card" : "border-line/60 shadow-sm"
         }`}
       >
         <a href={`${prefix}#top`} aria-label="StayMate — back to top" className="rounded-full" onClick={() => close()}>
           <Logo priority />
         </a>
 
-        <ul className="hidden items-center gap-1 xl:flex">
+        <ul className="hidden items-center gap-0.5 lg:flex">
           {navLinks.map((l) => (
             <li key={l.href}>
               <a
                 href={`${prefix}${l.href}`}
-                className="rounded-full px-3.5 py-2 text-[0.92rem] font-semibold text-navy/80 transition-colors hover:bg-sky hover:text-royal"
+                className="rounded-full px-3.5 py-2 text-[0.9rem] font-semibold text-navy/80 transition-colors hover:bg-sky hover:text-royal"
               >
                 {l.label}
               </a>
@@ -77,8 +77,9 @@ export function Navbar({ home = true }: { home?: boolean }) {
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <ButtonLink href={`${prefix}#early-access`} className="!h-10 !px-4 sm:!h-11 sm:!px-5">
-            <span className="sm:hidden">Join</span>
-            <span className="hidden sm:inline">Join Waitlist</span>
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[#6ee7b7]" />
+            <span className="sm:hidden">Join Free</span>
+            <span className="hidden sm:inline">Get Early Access</span>
           </ButtonLink>
           <button
             ref={toggleRef}
@@ -87,7 +88,7 @@ export function Navbar({ home = true }: { home?: boolean }) {
             aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((v) => !v)}
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-navy transition-colors hover:bg-sky xl:hidden"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-navy transition-colors hover:bg-sky lg:hidden"
           >
             {open ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
           </button>
@@ -96,11 +97,11 @@ export function Navbar({ home = true }: { home?: boolean }) {
 
       {open ? (
         <>
-          <button type="button" aria-label="Close menu" tabIndex={-1} className="fixed inset-0 -z-10 bg-navy/30 backdrop-blur-[2px] xl:hidden" onClick={() => close()} />
+          <button type="button" aria-label="Close menu" tabIndex={-1} className="fixed inset-0 -z-10 bg-navy/30 backdrop-blur-[2px] lg:hidden" onClick={() => close()} />
           <div
             id="mobile-menu"
             ref={menuRef}
-            className="card mx-auto mt-2 max-w-6xl p-3 xl:hidden"
+            className="card mx-auto mt-2 max-w-7xl p-3 lg:hidden"
             style={{ animation: "acc-in 0.25s ease-out" }}
           >
             <ul className="grid gap-1">

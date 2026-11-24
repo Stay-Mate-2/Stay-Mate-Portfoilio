@@ -65,11 +65,10 @@ export const brand = {
 } as const;
 
 export const navLinks = [
-  { href: "#top", label: "Home" },
-  { href: "#how-it-works", label: "How It Works" },
+  { href: "#why-staymate", label: "Why StayMate" },
   { href: "#features", label: "Features" },
-  { href: "#students", label: "For Students" },
-  { href: "#owners", label: "For Property Owners" },
-  { href: "#about", label: "About" },
+  { href: "#how-it-works", label: "How It Works" },
+  { href: "#who-its-for", label: "Who It's For" },
+  { href: "#roadmap", label: "What We're Building" },
   { href: "#faq", label: "FAQ" },
 ] as const;

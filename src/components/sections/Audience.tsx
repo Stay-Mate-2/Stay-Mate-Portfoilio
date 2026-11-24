@@ -1,82 +1,162 @@
-import { Building2, Check, GraduationCap } from "lucide-react";
+import { BriefcaseBusiness, Building2, Check, CheckCircle2, Clock3, GraduationCap, Rocket } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
 import { ButtonLink } from "@/components/ui/Button";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Label, SectionHeading } from "@/components/ui/SectionHeading";
 import { Tilt3D } from "@/components/ui/Tilt3D";
 
-const students = [
-  "Find roommates who match your routine and budget",
-  "See the real monthly cost, not just the rent",
-  "Browse PGs, rooms and flats near where you study or work",
-  "Keep your phone number private until you choose to share",
-];
+const PERSONA_CARDS = [
+  {
+    id: "students",
+    icon: GraduationCap,
+    badge: "Students & Freshers",
+    title: "For college & university students",
+    subtitle: "Moving for your degree, coaching, or internship? Start with roommates and budgets that respect your routine.",
+    accentClass: "slab-3d-royal bg-gradient-to-br from-[#2d82ef] to-royal text-white",
+    cardClass: "bg-white hover:border-royal/30",
+    ctaLabel: "Join as a Student",
+    ctaVariant: "primary" as const,
+    points: [
+      "Match on study hours, sleep schedule, food habits & student budget",
+      "Explore PGs, shared rooms & student residences near campus",
+      "See rent, deposit & estimated monthly share before calling home",
+      "Chat safely inside the app without posting your phone number publicly",
+    ],
+  },
+  {
+    id: "professionals",
+    icon: BriefcaseBusiness,
+    badge: "Working Professionals",
+    title: "For relocating & hybrid professionals",
+    subtitle: "Starting a new role in a new city? Skip chaotic flatmate threads and awkward end-of-month bill reminders.",
+    accentClass: "slab-3d bg-gradient-to-br from-[#1d4375] to-navy text-white",
+    cardClass: "bg-gradient-to-b from-sky/55 to-white hover:border-royal/35",
+    ctaLabel: "Join as a Professional",
+    ctaVariant: "primary" as const,
+    points: [
+      "Align on WFH/hybrid schedules, cleanliness, guests & quiet hours",
+      "Discover private rooms and 1BHK/2BHK shared flats with clear deposits",
+      "Check pairwise compatibility across multi-roommate households",
+      "Get early access to planned shared-expense & bill-reminder tools",
+    ],
+  },
+  {
+    id: "owners",
+    icon: Building2,
+    badge: "Owners & PG Operators",
+    title: "For property owners & PG operators",
+    subtitle: "Fill rooms, PG beds, and flats with genuine, well-informed seekers—without broker noise or endless repeat calls.",
+    accentClass: "slab-3d-emerald bg-gradient-to-br from-[#26c47c] to-emerald text-navy",
+    cardClass: "bg-gradient-to-br from-mint/85 to-white hover:border-emerald/40",
+    ctaLabel: "Join as a Property Owner",
+    ctaVariant: "secondary" as const,
+    points: [
+      "Publish PGs, rooms & flats with monthly rent and deposit shown clearly",
+      "Moderation review builds trust so serious seekers enquire with confidence",
+      "Manage availability and visit enquiries from one clean owner workflow",
+      "Unlock your exact street address only when you approve an enquiry",
+    ],
+  },
+] as const;
 
-const owners = [
-  "List rooms, PGs and flats with rent and deposit shown separately",
-  "Listings are reviewed before going live, building trust with seekers",
-  "Receive visit enquiries and decide when to share your exact address",
-  "Manage vacancy and enquiries from one simple dashboard",
-];
+const ROADMAP = [
+  {
+    stage: "Phase 1 · Built in Pilot App",
+    tone: "green" as const,
+    statusLabel: "Working in pilot build",
+    icon: CheckCircle2,
+    items: [
+      "Android-first mobile app (Expo / React Native) & Express + Socket.IO backend",
+      "Phone OTP sign-in with role onboarding for Seekers and Property Owners",
+      "Explainable 8-factor compatibility engine + hard deal-breaker filters",
+      "Moderated PG, room & flat discovery with owner-approved address sharing",
+      "Real-time in-app chat plus 1-tap block, report & moderation web console",
+    ],
+  },
+  {
+    stage: "Phase 2 · Happening Right Now",
+    tone: "blue" as const,
+    statusLabel: "Active milestone",
+    icon: Rocket,
+    items: [
+      "Onboarding founding Students, Working Professionals & Property Owners",
+      "Prioritizing first rollout cities based on early-access demand",
+      "Setting up production cloud database, SMS OTP gateway & media storage",
+      "Physical Android device QA, security testing & Play Store release prep",
+    ],
+  },
+  {
+    stage: "Phase 3 · Next After Launch",
+    tone: "amber" as const,
+    statusLabel: "Planned next",
+    icon: Clock3,
+    items: [
+      "1-tap household rent, electricity & Wi-Fi expense splitting",
+      "Shared kitchen grocery lists and household supply tracking",
+      "Automated monthly bill reminders so flatmates never chase each other",
+      "Expanded city cohorts and deeper owner portfolio tools",
+    ],
+  },
+] as const;
 
 export function Audience() {
   return (
-    <section aria-labelledby="audience-title" className="bg-white py-24 sm:py-32">
+    <section id="who-its-for" aria-labelledby="audience-title" className="bg-white py-24 sm:py-32">
       <div className="wrap">
         <SectionHeading
           id="audience-title"
-          eyebrow="Built for you"
+          eyebrow="Built for every side of shared living"
           align="center"
           title={
             <>
-              Whether you&apos;re looking, or <span className="text-gradient">offering a home.</span>
+              Designed for the people <span className="text-gradient">living in a home</span>—and the people offering one.
             </>
           }
-        />
+        >
+          Whether you are moving for college, relocating for work, or managing a PG or flat, StayMate gives you clarity upfront.
+        </SectionHeading>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-2">
-          <Reveal id="students" className="h-full">
-            <Tilt3D className="card relative h-full overflow-hidden p-8 hover:border-royal/30 hover:shadow-lift sm:p-10">
-              <div className="preserve-3d">
-                <span className="z-pop slab-3d-royal grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-[#2d82ef] to-royal text-white">
-                  <GraduationCap size={26} aria-hidden="true" />
-                </span>
-                <h3 className="z-pop-sm mt-6 font-display text-2xl font-extrabold">For students &amp; young professionals</h3>
-                <p className="mt-2 text-muted">Moving to a new city for college or your first job? Start with people and places that fit.</p>
-                <ul className="mt-6 grid gap-3">
-                  {students.map((t) => (
-                    <li key={t} className="flex items-start gap-3 font-medium text-navy/90">
-                      <Check size={20} className="mt-0.5 shrink-0 text-emerald-ink" aria-hidden="true" /> {t}
-                    </li>
-                  ))}
-                </ul>
-                <ButtonLink href="#early-access" className="z-pop-sm slab-3d-royal mt-8">
-                  Join as a student or professional
-                </ButtonLink>
-              </div>
-            </Tilt3D>
-          </Reveal>
+        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+          {PERSONA_CARDS.map((card, idx) => {
+            const Icon = card.icon;
+            return (
+              <Reveal key={card.id} id={card.id} delay={idx * 80} className="h-full">
+                <Tilt3D className={`card relative h-full overflow-hidden p-7 hover:shadow-lift sm:p-8 ${card.cardClass}`}>
+                  <div className="preserve-3d flex h-full flex-col">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className={`z-pop grid h-13 w-13 place-items-center rounded-2xl ${card.accentClass}`}>
+                        <Icon size={25} aria-hidden="true" />
+                      </span>
+                      <span className="rounded-full border border-line bg-white/90 px-3 py-1 text-xs font-bold text-navy">
+                        {card.badge}
+                      </span>
+                    </div>
 
-          <Reveal id="owners" delay={100} className="h-full">
-            <Tilt3D className="card relative h-full overflow-hidden bg-gradient-to-br from-mint to-white p-8 hover:border-emerald/40 hover:shadow-lift sm:p-10">
-              <div className="preserve-3d">
-                <span className="z-pop slab-3d-emerald grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-[#26c47c] to-emerald text-navy">
-                  <Building2 size={26} aria-hidden="true" />
-                </span>
-                <h3 className="z-pop-sm mt-6 font-display text-2xl font-extrabold">For property owners &amp; PG operators</h3>
-                <p className="mt-2 text-muted">Reach seekers who are actively looking, with less back-and-forth and more clarity.</p>
-                <ul className="mt-6 grid gap-3">
-                  {owners.map((t) => (
-                    <li key={t} className="flex items-start gap-3 font-medium text-navy/90">
-                      <Check size={20} className="mt-0.5 shrink-0 text-emerald-ink" aria-hidden="true" /> {t}
-                    </li>
-                  ))}
-                </ul>
-                <ButtonLink href="#early-access" variant="secondary" className="z-pop-sm slab-3d mt-8">
-                  Join as a property owner
-                </ButtonLink>
-              </div>
-            </Tilt3D>
-          </Reveal>
+                    <h3 className="z-pop-sm mt-6 font-display text-2xl font-extrabold text-navy">{card.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted">{card.subtitle}</p>
+
+                    <ul className="mt-6 grid gap-3 text-sm">
+                      {card.points.map((t) => (
+                        <li key={t} className="flex items-start gap-2.5 font-medium text-navy/90">
+                          <Check size={18} className="mt-0.5 shrink-0 text-emerald-ink" aria-hidden="true" />
+                          <span>{t}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-auto pt-8">
+                      <ButtonLink
+                        href="#early-access"
+                        variant={card.ctaVariant}
+                        className={`z-pop-sm w-full ${card.ctaVariant === "primary" ? "slab-3d-royal" : "slab-3d"}`}
+                      >
+                        {card.ctaLabel}
+                      </ButtonLink>
+                    </div>
+                  </div>
+                </Tilt3D>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -85,48 +165,76 @@ export function Audience() {
 
 export function About() {
   return (
-    <section id="about" aria-labelledby="about-title" className="bg-sky py-24 sm:py-32">
-      <div className="wrap grid items-center gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
-        <div>
-          <SectionHeading
-            id="about-title"
-            eyebrow="About StayMate"
-            title={
-              <>
-                Shared living, <span className="text-gradient">made human.</span>
-              </>
-            }
-          >
-            StayMate is an India-first shared-living platform for students and working professionals. We believe a good home is as much about who you live with as where you live — and that
-            nobody should be surprised by their bills.
-          </SectionHeading>
-          <Reveal className="mt-6 grid gap-4 text-[1.02rem] leading-relaxed text-muted">
-            <p>
-              We&apos;re building people-first matching, honest cost visibility and thoughtful safety tools in one Android app. It&apos;s still taking shape, and we&apos;re sharing our
-              progress openly — which is why everything on this page labels what is working today, what&apos;s a concept and what&apos;s only sample data.
-            </p>
+    <section id="roadmap" aria-labelledby="about-title" className="bg-sky py-24 sm:py-32">
+      <div id="about" className="wrap">
+        <div className="grid items-start gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
+          <div>
+            <SectionHeading
+              id="about-title"
+              eyebrow="What we're building & doing now"
+              title={
+                <>
+                  Real software in motion—<span className="text-gradient">shared openly with you.</span>
+                </>
+              }
+            >
+              StayMate is an India-first shared-living platform built around a simple belief: a good home is as much about who you live with as where you live, and nobody should get blindsided by hidden bills.
+            </SectionHeading>
+            <Reveal className="mt-5 text-[1rem] leading-relaxed text-muted">
+              <p>
+                Instead of making vague hype promises, we label every single capability honestly—showing you what already runs in our pilot Android &amp; backend build today, what we are preparing right now during early access, and what comes next.
+              </p>
+            </Reveal>
+          </div>
+
+          <Reveal delay={100}>
+            <ul className="grid gap-4 sm:grid-cols-2">
+              {[
+                ["India-first reality", "Built around Indian PGs, shared flats, campus belts, deposits, and tiffin/utility realities."],
+                ["Compatibility before commitment", "Know daily lifestyle alignment and deal-breakers before signing or paying."],
+                ["Zero-surprise cost clarity", "Rent, security deposit, and everyday household expenses separated clearly."],
+                ["Privacy & control by default", "Hidden phone numbers, moderated listings, and owner-gated exact addresses."],
+              ].map(([t, d]) => (
+                <li key={t} className="h-full">
+                  <Tilt3D className="card h-full p-5 hover:border-royal/30 hover:shadow-lift sm:p-6">
+                    <div className="preserve-3d">
+                      <h3 className="z-pop-sm font-display text-base font-extrabold text-navy">{t}</h3>
+                      <p className="mt-1.5 text-sm leading-relaxed text-muted">{d}</p>
+                    </div>
+                  </Tilt3D>
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </div>
 
-        <Reveal delay={100}>
-          <ul className="grid gap-4 sm:grid-cols-2">
-            {[
-              ["India-first", "Designed around how Indian students and professionals actually find homes."],
-              ["Compatibility before commitment", "Understand fit up front, not after the lease."],
-              ["Transparent pricing", "Rent, deposit and everyday costs, never hidden."],
-              ["Privacy by default", "Your data and contact details stay in your control."],
-            ].map(([t, d]) => (
-              <li key={t} className="h-full">
-                <Tilt3D className="card h-full p-6 hover:border-royal/30 hover:shadow-lift">
-                  <div className="preserve-3d">
-                    <h3 className="z-pop-sm font-display text-lg font-bold">{t}</h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-muted">{d}</p>
+        {/* 3-Stage Transparent Product Roadmap */}
+        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+          {ROADMAP.map((phase, idx) => {
+            const Icon = phase.icon;
+            return (
+              <Reveal key={phase.stage} delay={idx * 90} className="h-full">
+                <div className="card flex h-full flex-col p-6 sm:p-8">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-sky text-royal">
+                      <Icon size={20} aria-hidden="true" />
+                    </span>
+                    <Label tone={phase.tone}>{phase.statusLabel}</Label>
                   </div>
-                </Tilt3D>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+                  <h3 className="mt-5 font-display text-xl font-extrabold text-navy">{phase.stage}</h3>
+                  <ul className="mt-4 grid gap-2.5 text-sm text-navy/85">
+                    {phase.items.map((item) => (
+                      <li key={item} className="flex items-start gap-2.5">
+                        <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-royal" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

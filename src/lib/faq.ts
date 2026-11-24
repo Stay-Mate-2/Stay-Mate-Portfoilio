@@ -7,11 +7,19 @@ export interface Faq {
 export const faqs: Faq[] = [
   {
     q: "What is StayMate?",
-    a: "StayMate is an India-first shared-living platform. It helps you find compatible roommates, discover affordable PGs, rooms and flats, understand the real cost of living, and — in the future — manage shared expenses together.",
+    a: "StayMate is an India-first shared-living Android app in development. It brings together explainable 8-factor roommate matching, moderated PGs, rooms and flats with transparent rent and deposit, a real monthly cost calculator, private in-app chat, and planned shared-expense tools.",
+  },
+  {
+    q: "How is StayMate different from WhatsApp groups or broker sites?",
+    a: "Instead of public group chats that expose your phone number or listings that hide deposits and extra bills, StayMate checks hard deal-breakers and lifestyle fit upfront, separates monthly rent from security deposit, reviews listings before they go live, and keeps your phone number and exact street address private until you choose to share.",
+  },
+  {
+    q: "What is already built vs. still being developed?",
+    a: "Our pilot Android and backend build already includes phone OTP sign-in, the 8-factor compatibility engine with deal-breaker filters, roommate and property discovery, real-time in-app chat, block/report safety tools, and listing moderation. Right now we are onboarding our early-access cohort and preparing production cloud infrastructure; shared bill-splitting and grocery tools are planned for a later release.",
   },
   {
     q: "Who can use StayMate?",
-    a: "StayMate is for college and university students, people moving to a new city, working professionals looking for roommates or accommodation, and property owners or PG operators who want to list places.",
+    a: "StayMate is built for three groups: college and university students, working professionals relocating or flat-sharing, and property owners or PG operators who want to connect with genuine seekers.",
   },
   {
     q: "Is StayMate designed for students?",
