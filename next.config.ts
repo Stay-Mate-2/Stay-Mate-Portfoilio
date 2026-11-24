@@ -5,9 +5,9 @@ const isDev = process.env.NODE_ENV !== "production";
 /**
  * Content-Security-Policy.
  * Next.js static pages need inline bootstrap scripts, so `script-src` keeps
- * 'unsafe-inline' (no nonce is possible on statically rendered pages). Everything
- * else is locked to same-origin: the site loads no third-party scripts, fonts
- * (next/font self-hosts), analytics or trackers.
+ * 'unsafe-inline' (no nonce is possible on statically rendered pages). External
+ * iframes are strictly limited to `https://docs.google.com` for the embedded
+ * early-access Google Form; all scripts, fonts, styles, and connections stay same-origin.
  */
 const csp = [
   "default-src 'self'",
@@ -16,6 +16,7 @@ const csp = [
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
   "connect-src 'self'",
+  "frame-src https://docs.google.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

@@ -50,11 +50,11 @@ Derived from the approved StayMate logo ([`assets/brand-source/light-mode-logo.j
 - **Progressive 3D Scroll Reveal (`src/components/ui/Reveal.tsx`):** Content renders visibly with no JS; below-the-fold sections unfold via a 3D perspective transition (`rotateX`, `translate3d`) triggered once by `IntersectionObserver`.
 - **Scroll-Linked 3D Choreography (`src/components/ui/ScrollMotion3D.tsx`):** Shared passive `scroll` + `requestAnimationFrame` coordinator writes normalized viewport progress (`--sp`, `--sp-abs`) to `.scroll-3d` sections with zero React re-renders and zero CLS.
 - **Reduced Motion:** `@media (prefers-reduced-motion: reduce)` disables smooth scrolling, reveal transitions, pointer tilt, and scroll-3D transforms, stops orbital/grid-glide loops, and freezes 3D prisms (`Cube3D`) at a static isometric angle in `globals.css`.
-- **Semantic Landmarks & Controls:** Skip link, single `<h1>`, logical heading hierarchy, native `<details>` FAQ accordions, `aria-live="polite"` on interactive calculators/filters, `aria-live="assertive"` error summary on the waitlist form.
+- **Semantic Landmarks & Controls:** Skip link, single `<h1>`, logical heading hierarchy, native `<details>` FAQ accordions, `aria-live="polite"` on interactive calculators/filters, accessible titled `<iframe>` and fallback link inside `#early-access`.
 
 ## 6. Product Honesty & Labelling Rules
 
 - **Sample / Demo Badges:** All illustrative profiles, compatibility scores, and property cards carry visible amber/navy `Demo` or `Illustrative` labels.
 - **Planned Features:** Shared expense splitting, grocery lists, and bill reminders are explicitly tagged `Planned` (the Android app pilot does not yet ship these UI modules).
 - **Safety Claims:** Never claims ID/KYC verification or hack-proof guarantees; explicitly notes that ID/title verification is not currently implemented.
-- **Early-Access Integrity:** Never displays fake waitlist counters or fake registration confirmations. While `EARLY_ACCESS_ENABLED` is not `"true"` (or server secrets/Upstash Redis are unconfigured), the UI stays closed (`"Registration opens soon"`), `POST /api/early-access` fails closed (`503`), and optional marketing consent is separated cleanly from transactional registration confirmation.
+- **Early-Access Integrity:** Never displays fake waitlist counters or unverified `no-cors` submission confirmations. The landing page embeds a verified `https://docs.google.com/forms/.../viewform?embedded=true` form directly inside `#early-access` (or renders an honest non-collecting notice when unconfigured), and `/unsubscribe` routes withdrawal/deletion requests cleanly via `staymate2@gmail.com`.

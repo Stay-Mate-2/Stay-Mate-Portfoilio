@@ -1,78 +1,144 @@
 "use client";
 
-import { useId, useRef, useState, type FormEvent } from "react";
-import { CheckCircle2, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { consentWithdrawSchema } from "@/lib/early-access/schema";
+import { useId, useState } from "react";
+import { Check, Copy, Mail } from "lucide-react";
+import { contactEmail } from "@/lib/site";
 
-type State = { kind: "idle" } | { kind: "busy" } | { kind: "done" } | { kind: "error"; message: string };
+type RequestType = "marketing" | "delete";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function UnsubscribeForm() {
   const id = useId();
-  const [state, setState] = useState<State>({ kind: "idle" });
-  const [fieldError, setFieldError] = useState<string>();
-  const errRef = useRef<HTMLParagraphElement>(null);
+  const [email, setEmail] = useState("");
+  const [requestType, setRequestType] = useState<RequestType>("marketing");
+  const [touchedError, setTouchedError] = useState<string>();
+  const [copied, setCopied] = useState(false);
 
-  async function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const parsed = consentWithdrawSchema.safeParse({ email: String(fd.get("email") ?? "") });
-    if (!parsed.success) {
-      setFieldError(parsed.error.issues[0]?.message ?? "Please enter a valid email address.");
-      return;
-    }
-    setFieldError(undefined);
-    setState({ kind: "busy" });
+  const trimmedEmail = email.trim();
+  const validEmail = EMAIL_RE.test(trimmedEmail);
+
+  const subject =
+    requestType === "delete"
+      ? "StayMate Early Access — Delete My Registration Data"
+      : "StayMate Early Access — Withdraw Marketing Updates";
+
+  const bodyLines = [
+    "Hello StayMate team,",
+    "",
+    requestType === "delete"
+      ? "Please permanently remove my early-access registration record from your Google Sheet."
+      : "Please stop sending me optional product updates and set my marketing permission to withdrawn.",
+    ...(validEmail ? [`Registered email: ${trimmedEmail}`] : ["Registered email: [enter the email you registered with]"]),
+    "",
+    "Thank you.",
+  ];
+
+  const mailtoHref = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join("\n"))}`;
+
+  async function copyAddress() {
     try {
-      const res = await fetch("/api/early-access/unsubscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: parsed.data.email, honeypot: String(fd.get("honeypot") ?? "") }),
-      });
-      const data = (await res.json().catch(() => null)) as { ok?: boolean; message?: string } | null;
-      if (res.ok && data?.ok) setState({ kind: "done" });
-      else setState({ kind: "error", message: data?.message ?? "Something went wrong. Please try again." });
+      await navigator.clipboard.writeText(contactEmail);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2500);
     } catch {
-      setState({ kind: "error", message: "We couldn't connect. Please check your connection and try again." });
+      setCopied(false);
     }
-  }
-
-  if (state.kind === "done") {
-    return (
-      <div role="status" className="py-6 text-center">
-        <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-mint text-emerald-ink"><CheckCircle2 size={30} aria-hidden="true" /></span>
-        <p className="mt-4 font-display text-xl font-extrabold">Request received</p>
-        <p className="mt-2 text-muted">If that email was subscribed for optional product updates, marketing consent has been withdrawn.</p>
-      </div>
-    );
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="grid gap-4">
-      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-        <label htmlFor={`${id}-hp`}>Leave empty</label>
-        <input id={`${id}-hp`} name="honeypot" tabIndex={-1} autoComplete="off" />
-      </div>
+    <div className="grid gap-5">
+      <fieldset>
+        <legend className="text-sm font-bold text-navy">What would you like to do?</legend>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          {[
+            { value: "marketing" as const, label: "Stop marketing updates" },
+            { value: "delete" as const, label: "Delete my registration" },
+          ].map((opt) => (
+            <label
+              key={opt.value}
+              className={`flex min-h-12 cursor-pointer items-center justify-center rounded-xl border px-3 py-2.5 text-center text-sm font-semibold transition-all has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-royal ${
+                requestType === opt.value
+                  ? "border-royal bg-royal text-white shadow-md"
+                  : "border-line bg-white text-navy/85 hover:border-royal/50 hover:bg-sky"
+              }`}
+            >
+              <input
+                type="radio"
+                name="requestType"
+                value={opt.value}
+                checked={requestType === opt.value}
+                onChange={() => setRequestType(opt.value)}
+                className="sr-only"
+              />
+              {opt.label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
       <div>
-        <label htmlFor={`${id}-email`} className="text-sm font-bold">Email address</label>
+        <label htmlFor={`${id}-email`} className="text-sm font-bold text-navy">
+          Registered email address <span className="font-medium text-muted">(helps pre-fill your message)</span>
+        </label>
         <input
           id={`${id}-email`}
-          name="email"
           type="email"
           autoComplete="email"
-          required
           maxLength={254}
-          aria-invalid={Boolean(fieldError)}
-          aria-describedby={fieldError ? `${id}-err` : undefined}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (touchedError) setTouchedError(undefined);
+          }}
+          onBlur={() => {
+            if (trimmedEmail && !validEmail) {
+              setTouchedError("Please enter a valid email address.");
+            }
+          }}
           placeholder="you@example.com"
-          className={`mt-1.5 h-12 w-full rounded-xl border bg-white px-4 font-medium outline-none transition focus:border-royal focus:ring-4 focus:ring-royal/15 ${fieldError ? "border-red-400" : "border-line"}`}
+          aria-invalid={Boolean(touchedError)}
+          aria-describedby={touchedError ? `${id}-err` : undefined}
+          className={`mt-1.5 h-12 w-full rounded-xl border bg-white px-4 font-medium outline-none transition focus:border-royal focus:ring-4 focus:ring-royal/15 ${
+            touchedError ? "border-red-400" : "border-line"
+          }`}
         />
-        {fieldError ? <p id={`${id}-err`} ref={errRef} className="mt-1.5 text-sm font-medium text-red-700">{fieldError}</p> : null}
+        {touchedError ? (
+          <p id={`${id}-err`} className="mt-1.5 text-sm font-medium text-red-700">
+            {touchedError}
+          </p>
+        ) : null}
       </div>
-      {state.kind === "error" ? <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm font-medium text-red-900">{state.message}</p> : null}
-      <Button type="submit" size="lg" disabled={state.kind === "busy"}>
-        {state.kind === "busy" ? (<><Loader2 size={18} className="animate-spin" aria-hidden="true" /> Working…</>) : "Withdraw marketing consent"}
-      </Button>
-    </form>
+
+      <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+        <a
+          href={mailtoHref}
+          className="inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-royal px-6 font-display text-base font-semibold text-white shadow-[0_6px_18px_-4px_rgb(23_105_210_/_0.5)] transition hover:bg-royal-700 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-royal"
+        >
+          <Mail size={18} aria-hidden="true" />
+          Email StayMate
+        </a>
+
+        <button
+          type="button"
+          onClick={copyAddress}
+          className="inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-line bg-white px-5 text-sm font-semibold text-navy transition hover:border-royal/40 hover:bg-sky focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-royal"
+        >
+          {copied ? <Check size={16} className="text-emerald-ink" aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+          {copied ? "Copied email" : "Copy address"}
+        </button>
+      </div>
+
+      <div className="rounded-2xl border border-line bg-sky/45 p-4 text-sm leading-relaxed text-navy/90">
+        <p>
+          <strong>Send from your registered email:</strong> Write to{" "}
+          <a href={`mailto:${contactEmail}`} className="font-semibold text-royal underline underline-offset-4">
+            {contactEmail}
+          </a>{" "}
+          from the address you used in the form so we can verify ownership and update or permanently delete your row within{" "}
+          <strong>7 days</strong>.
+        </p>
+      </div>
+    </div>
   );
 }

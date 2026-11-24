@@ -15,13 +15,9 @@ import { Safety } from "@/components/sections/Safety";
 import { SharedLiving } from "@/components/sections/SharedLiving";
 import { Solution } from "@/components/sections/Solution";
 import { JsonLd } from "@/components/JsonLd";
-import { isEarlyAccessEnabled } from "@/lib/early-access/config";
-
-export const dynamic = "force-dynamic";
+import { googleFormEmbedUrl } from "@/lib/site";
 
 export default function HomePage() {
-  const earlyAccessEnabled = isEarlyAccessEnabled();
-
   return (
     <>
       <JsonLd />
@@ -39,7 +35,7 @@ export default function HomePage() {
         <ProductPreview />
         <Audience />
         <About />
-        <EarlyAccess enabled={earlyAccessEnabled} />
+        <EarlyAccess embedUrl={googleFormEmbedUrl} />
         <FAQ />
         <FinalCTA />
       </main>

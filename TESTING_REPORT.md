@@ -1,46 +1,36 @@
 # StayMate Website — Testing & Verification Report
 
-**Date:** 2026-11-23
-**Scope:** Standalone `StayMate-Website/` pre-launch website, Vercel `/api/early-access` & `/api/early-access/unsubscribe` routes, Upstash Redis fail-closed rate limiting, and `google-apps-script/Code.gs` HMAC-SHA256 / Google Sheets / `MailApp` integration.
+**Date:** 2026-11-24
+**Scope:** Standalone `StayMate-Website/` pre-launch static site with inline embedded Google Form integration (`#early-access`), strict CSP `frame-src https://docs.google.com`, Google Form URL normalizer (`src/lib/google-form.ts`), `/unsubscribe` `mailto:staymate2@gmail.com` helper, and updated `/privacy` policy.
 
 ## 1. Automated Checks & Security Tests
 
-Executed via `npm run check` in `StayMate-Website/` (`eslint`, `tsc --noEmit`, `vitest run`, `next build`):
+Executed via `npm run check` in `StayMate-Website/` (`eslint .`, `tsc --noEmit`, `vitest run`, `next build`):
 
 | Check | Command | Result | Details |
 | --- | --- | --- | --- |
 | ESLint | `npm run lint` | **Passed** | 0 errors, 0 warnings |
 | TypeScript | `npm run typecheck` | **Passed** | Strict mode + `noUncheckedIndexedAccess`, 0 errors |
-| Unit, Security & Protocol Tests | `npm test` (`vitest run`) | **Passed (31/31)** | 3 suites: `calculator.test.ts` (7), `compat-and-limit.test.ts` (3), `early-access.test.ts` (21 tests covering all 25 required security, validation, HMAC, replay, failure recovery, formula/HTML injection, rate-limit fail-closed, and consent-withdrawal scenarios executing real `google-apps-script/Code.gs` in a Node VM sandbox backed by real `crypto` HMACs and mocked Google Workspace services) |
-| Production Build | `npm run build` | **Passed** | `next build` (`Next.js 16.4.6` Turbopack): dynamic `/`, `/api/early-access`, `/api/early-access/unsubscribe`; static `/privacy`, `/terms`, `/unsubscribe`, `/_not-found`, `/apple-icon.png`, `/icon.png`, `/opengraph-image`, `/robots.txt`, `/sitemap.xml` |
-| Production Dependency Audit | `npm audit --omit=dev` | **Passed** | `0` runtime vulnerabilities (`devDependency` `vitest@3.2.x` carries a `tinypool`/`@vitest/mocker` test-tooling advisory, excluded from Vercel runtime bundles) |
-| Client Bundle Secret Scan | `grep -rnE` over `.next/static` & `public` | **Passed** | `0` occurrences of `STAYMATE_HMAC_SECRET`, `UPSTASH_REDIS_REST_TOKEN`, `STAYMATE_APPS_SCRIPT_URL`, `EARLY_ACCESS_ENABLED`, or `SHARED_SECRET` |
+| Unit & URL Security Tests | `npm test` (`vitest run`) | **Passed (16/16)** | 3 suites: `calculator.test.ts` (7), `compat-and-limit.test.ts` (3), `google-form-url.test.ts` (6 tests verifying valid URL normalization with `?embedded=true`, `/u/N` stripping, rejection of `http:`, `javascript:`, `data:`, external domains, `forms.gle` shorteners, `/edit`, `/formResponse`, embedded HTML tags, credentials, and excessive lengths) |
+| Production Build | `npm run build` | **Passed** | `next build` (`Next.js 16.4.6` Turbopack): all `11/11` routes prerendered as Static (`/`, `/_not-found`, `/apple-icon.png`, `/icon.png`, `/opengraph-image`, `/privacy`, `/robots.txt`, `/sitemap.xml`, `/terms`, `/unsubscribe`) |
+| Production Dependency Audit | `npm audit --omit=dev` | **Passed** | `0 vulnerabilities` |
+| Static Asset Secret Scan | `grep -rnE` over `.next/static` & `public` | **Passed** | `0` occurrences of legacy `STAYMATE_HMAC_SECRET`, `UPSTASH_REDIS_REST_TOKEN`, `STAYMATE_APPS_SCRIPT_URL`, `EARLY_ACCESS_ENABLED`, or `SHARED_SECRET` |
 
-## 2. Live Production Build Browser Verification
+## 2. Live Production Build Browser Verification (Headless Chrome CDP)
 
-Verified against `npx next start -p 3104` (default `EARLY_ACCESS_ENABLED` unset/`false`) using headless Google Chrome:
+Verified via headless Chrome DevTools Protocol against `npx next start -p 3108 -H 127.0.0.1` in both modes:
 
-- **Responsive & Runtime Integrity:**
-  - `390×844` mobile: `innerWidth: 390`, `scrollWidth: 390`, `overflowX: false`.
-  - `1440×900` desktop: `innerWidth: 1440`, `scrollWidth: 1425`, `overflowX: false`.
-  - `0` console errors, `0` failed requests on page routes.
-- **Disabled State & Form Preservation:**
-  - `#early-access` rendered the amber *"Registration isn't open yet"* banner, disabled submit button (`"Registration opens soon"`), canonical category radio buttons (`Student`, `Working Professional`, `Property Owner`), and separated transactional vs. optional `marketingConsent` checkbox.
-  - Direct HTTP `GET /api/early-access` returned `405 Method Not Allowed`.
-  - Direct same-origin `POST /api/early-access` with `EARLY_ACCESS_ENABLED` unset returned `503 { "ok": false, "code": "EARLY_ACCESS_DISABLED" }`.
+- **Security Headers & Removed Routes:**
+  - `Content-Security-Policy` served `frame-src https://docs.google.com` alongside `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, and `upgrade-insecure-requests`.
+  - `/`, `/privacy`, and `/unsubscribe` returned HTTP `200`; removed `/api/early-access` returned `404`.
+- **Embedded Iframe Mode (`NEXT_PUBLIC_GOOGLE_FORM_URL` configured):**
+  - `#early-access` rendered `<iframe src="https://docs.google.com/forms/d/e/.../viewform?embedded=true">` inside the desktop card (`lg:grid-cols-[0.78fr_1.22fr]`) without right-edge clipping or horizontal overflow (`overflowX: false`) and with `0` console/CSP errors.
+- **Unconfigured Fallback Mode (`NEXT_PUBLIC_GOOGLE_FORM_URL` unset):**
+  - `#early-access` rendered an honest *"Registration form isn't linked yet"* notice with contact fallback `staymate2@gmail.com` (`overflowX: false`, `0` console errors).
 - **Legal & Withdrawal Pages:**
-  - `/privacy` verified documenting `StayMate_Early_Access_Database`, Upstash Redis hashed abuse limits, transactional vs. marketing consent separation, retention, and deletion/withdrawal rights.
-  - `/unsubscribe` verified rendering *"Withdraw marketing consent"* workflow.
+  - `/privacy` accurately documents Google Forms intake, private `StayMate_Early_Access_Database` Google Sheets storage, automatic responder receipts, and 7-day data deletion/withdrawal via `staymate2@gmail.com`.
+  - `/unsubscribe` provides the interactive update/deletion selector, email pre-fill helper, single-line `"Email StayMate"` `mailto:staymate2@gmail.com` CTA, and clipboard copy button cleanly without horizontal overflow.
 
-## 3. Prior 3D Motion & UI Verification (Retained)
+## 3. Live Google Form Connected
 
-Verified in the `2026-11-22` Chrome headless pass across `360px`–`1920px`:
-- `CLS: 0`, `4/4` loaded brand images, active `Cube3D` / `SpatialHeroStage` / `ProductPreview` Coverflow / `ScrollMotion3D`, and clean `prefers-reduced-motion: reduce` freezes.
-
-## 4. Remaining Manual Steps (Founder / Deployment Action)
-
-Automated Vitest execution exercised `Code.gs` inside Node's VM against Google Workspace API doubles; live Google Workspace, Gmail, and Upstash Redis execution requires manual setup per [`docs/EARLY_ACCESS_SETUP.md`](./docs/EARLY_ACCESS_SETUP.md):
-
-1. Create `StayMate_Early_Access_Database` in Google Sheets (Restricted access), paste `google-apps-script/Code.gs`, run `initializeDatabase()`, set Script Properties (`SPREADSHEET_ID`, `ADMIN_EMAIL`, `SHARED_SECRET`), and deploy as Web App (`Execute as: Me`, `Who has access: Anyone`).
-2. Provision Upstash Redis database and configure Vercel server environment variables (`STAYMATE_APPS_SCRIPT_URL`, `STAYMATE_HMAC_SECRET`, `STAYMATE_ALLOWED_ORIGIN`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, keeping `EARLY_ACCESS_ENABLED=false` initially).
-3. Perform one manual smoke registration on a Staging/Preview environment (`EARLY_ACCESS_ENABLED=true`) to verify real Sheets append, Gmail `MailApp` delivery, duplicate detection, and `/unsubscribe` row update, delete test data, and revert to `EARLY_ACCESS_ENABLED=false` until launch approval.
+Connected the official **StayMate Early Access** Google Form (`https://docs.google.com/forms/d/e/1FAIpQLSfkgrHcY8p0UXaCohq47dpoEJJLA11xA_pbJpG1hqItoDZryw/viewform?embedded=true`, resolved from `https://forms.gle/krB2LSLjMAirQa4i6`) via `DEFAULT_GOOGLE_FORM_URL` in [`src/lib/site.ts`](./src/lib/site.ts) so Vercel deploys with zero manual environment variable configuration.
